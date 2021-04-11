@@ -13,7 +13,6 @@ import torch
 from lib.config import Config
 from utils.evaluator import Evaluator
 
-
 def test(model, test_loader, evaluator, exp_root, cfg, view, epoch, max_batches=None, verbose=True):
     if verbose:
         logging.info("Starting testing.")

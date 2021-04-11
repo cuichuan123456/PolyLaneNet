@@ -32,13 +32,15 @@ def train(model, train_loader, exp_dir, cfg, val_loader, train_state=None):
     criterion_parameters = cfg.get_loss_parameters()
     criterion = model.loss
     total_step = len(train_loader)
-    ITER_LOG_INTERVAL = cfg['iter_log_interval']
+    ITER_LOG_INTERVAL = cfg['iter_log_interval']    #1 100 1
     ITER_TIME_WINDOW = cfg['iter_time_window']
     MODEL_SAVE_INTERVAL = cfg['model_save_interval']
+
     t0 = time()
     total_iter = 0
     iter_times = []
     logging.info("Starting training.")
+
     for epoch in range(starting_epoch, num_epochs + 1):
         epoch_t0 = time()
         logging.info("Beginning epoch {}".format(epoch))
@@ -96,9 +98,7 @@ def train(model, train_loader, exp_dir, cfg, val_loader, train_state=None):
             model.train()
         scheduler.step()
     logging.info("Training time: {:.4f}".format(time() - t0))
-
     return model
-
 
 def save_train_state(path, model, optimizer, lr_scheduler, epoch):
     train_state = {
@@ -120,18 +120,14 @@ def parse_args():
     parser.add_argument("--deterministic",
                         action="store_true",
                         help="set cudnn.deterministic = True and cudnn.benchmark = False")
-
     return parser.parse_args()
-
 
 def get_code_state():
     state = "Git hash: {}".format(
         subprocess.run(['git', 'rev-parse', 'HEAD'], stdout=subprocess.PIPE).stdout.decode('utf-8'))
     state += '\n*************\nGit diff:\n*************\n'
     state += subprocess.run(['git', 'diff'], stdout=subprocess.PIPE).stdout.decode('utf-8')
-
     return state
-
 
 def setup_exp_dir(exps_dir, exp_name, cfg_path):
     dirs = ["models"]
@@ -158,10 +154,8 @@ def get_exp_train_state(exp_root):
 
     return train_state
 
-
 def log_on_exception(exc_type, exc_value, exc_traceback):
     logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
-
 
 if __name__ == "__main__":
     args = parse_args()
@@ -178,7 +172,7 @@ if __name__ == "__main__":
 
     # Set up experiment
     if not args.resume:
-        exp_root = setup_exp_dir(cfg['exps_dir'], args.exp_name, args.cfg)
+        exp_root = setup_exp_dir(cfg['exps_dir'], args.exp_name, args.cfg)  #配置文件
     else:
         exp_root = os.path.join(cfg['exps_dir'], os.path.basename(os.path.normpath(args.exp_name)))
 
@@ -251,7 +245,6 @@ if __name__ == "__main__":
                                               num_workers=8)
 
     evaluator = Evaluator(test_loader.dataset, exp_root)
-
     logging.basicConfig(
         format="[%(asctime)s] [%(levelname)s] %(message)s",
         level=logging.INFO,
@@ -260,12 +253,11 @@ if __name__ == "__main__":
             logging.StreamHandler(),
         ],
     )
+
     logging.info('Code state:\n {}'.format(get_code_state()))
     _, mean_loss = test(model, test_loader, evaluator, exp_root, cfg, epoch=test_epoch, view=False)
     logging.info("Mean test loss: {:.4f}".format(mean_loss))
-
     evaluator.exp_name = args.exp_name
-
     eval_str, _ = evaluator.eval(label='{}_{}'.format(os.path.basename(args.exp_name), test_epoch))
 
     logging.info(eval_str)

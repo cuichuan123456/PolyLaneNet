@@ -9,7 +9,6 @@ from utils.evaluator import Evaluator
 
 warnings.simplefilter('ignore', np.RankWarning)
 
-
 def polyfit_upperbound(dataset, degree):
     evaluator = Evaluator(dataset, '/tmp', degree)
     print('Predicting with upperbound...')
@@ -27,9 +26,7 @@ def polyfit_upperbound(dataset, degree):
             pred[j, -(degree + 1):] = np.polyfit(y[ind], x[ind], degree)
         evaluator.add_prediction([i], pred, 0.0005)  # 0.0005 = dummy runtime
     _, result = evaluator.eval(label='upperbound', only_metrics=True)
-
     return result
-
 
 if __name__ == "__main__":
     cfg = Config(sys.argv[1] if len(sys.argv) > 1 else 'config.yaml')

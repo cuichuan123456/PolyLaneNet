@@ -1,6 +1,6 @@
 <div align="center">
 
-# PolyLaneNet
+# PolyLaneNet 注释版
 ![Method overview](figures/method-overview.png "Method overview")
 </div>
 
